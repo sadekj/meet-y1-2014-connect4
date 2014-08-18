@@ -1,15 +1,19 @@
 import turtle
 
+#pen up and hideing a turtle.
 turtle.penup()
 turtle.ht()
 
-turtle.screensize(400, 400, None)
+#initial set of variables
 turtle.tracer(0, 0)
-CELL_SIZE = 100
+CELL_SIZE = 50
 BOARD_HIEGHT = 6
 BOARD_WIDTH = 7
-START_X = -350
-START_Y = 250
+START_X = -175
+START_Y = 125
+PLAYER1 = 'red'
+PLAYER2 = 'blue'
+BASE_COLOR = 'black'
 
 board = [[0,1,2,3,4,5],
          [0,1,2,3,4,5],
@@ -18,35 +22,56 @@ board = [[0,1,2,3,4,5],
          [0,1,2,3,4,5],
          [0,1,2,3,4,5],
          [0,1,2,3,4,5]]
-
 cur_player = 1
 
-directions = [(-1,0), (1,0), (1,1), (-1,-1), (1,-1), (-1,1), (0,-1)]
 
 def vert_line(length):
     '''
     Draws a vertical line on the turtle canvas.
     '''
-    #insert code here
+    turtle.pd()
     turtle.sety(turtle.ycor() +length)
  
 def horz_line(length):
     '''
     Draws a horizontal line on the turtle canvas.
     '''
-    #insert code here
+    turtle.pd()
     turtle.setx(turtle.xcor() +length)
 
-def draw_board(x, y):
+def draw_board_1(x, y):
+    #drawing the board by drawing each cell in a loop
     for i in range(BOARD_WIDTH):
         for j in range(BOARD_HIEGHT):
             draw_cell(x,y)
             y -= CELL_SIZE
         y += CELL_SIZE*BOARD_HIEGHT
         x += CELL_SIZE
+    turtle.update()
+
+def draw_board(x,y):
+    #drawing the board by drawing the lines
+    turtle.pendown()
+    for i in range(BOARD_WIDTH + 1):
+        turtle.penup()
+        turtle.setpos(x, y)
+        turtle.pendown()
+        vert_line(-BOARD_HIEGHT * CELL_SIZE)
+        x += CELL_SIZE
+    x -= CELL_SIZE * (BOARD_WIDTH+1)
     
+    for i in range(BOARD_HIEGHT + 1):
+        turtle.penup()
+        turtle.setpos(x, y)
+        turtle.pendown()
+        horz_line(BOARD_WIDTH * CELL_SIZE)
+        y -= CELL_SIZE
+    turtle.penup()
+    
+        
 
 def draw_cell(x, y):
+    #drawing a cell in the board
     turtle.penup()
     turtle.setpos(x, y)
     turtle.pendown()
@@ -56,6 +81,7 @@ def draw_cell(x, y):
     vert_line(CELL_SIZE)
 
 def draw_piece(column, row, color):
+    #
     x = START_X + column * CELL_SIZE
     y = START_Y - row * CELL_SIZE
     turtle.fillcolor(color)
@@ -69,67 +95,34 @@ def draw_piece(column, row, color):
     turtle.end_fill()
     turtle.penup()
     turtle.pencolor("black")
-    
 
 def play1(column):
     global board, cur_player
-    if (board[column][-1] == 'red' or board[column][-1] == 'blue'):
+    if (board[column][-1] == PLAYER1 or board[column][-1] == PLAYER2):
          print ('can\'t place the piece! \n try again')
     else:
         for y in board[column]:
-            print (y)
-            if (y != 'red' and y != 'blue'):
-                print ("here")
-                draw_piece(column, 5-y, "red")
-                board[column][y] = 'red'
+            if (y != PLAYER1 and y != PLAYER2):
+                draw_piece(column, 5-y, PLAYER1)
+                board[column][y] = PLAYER1
                 if (check_for_win(column, y)):
                     print ('player 1 won')
                 cur_player = 2
                 break
 
-
-
-
 def play2(column):
     global board, cur_player
-    if (board[column][-1] == 'red' or board[column][-1] == 'blue'):
+    if (board[column][-1] == PLAYER1 or board[column][-1] == PLAYER2):
          print ('can\'t place the piece! \n try again')
     else:
         for y in board[column]:
-            print (y)
-            if (y != 'red' and y != 'blue'):
-                print ("here")
-                draw_piece(column, 5-y, "blue")
-                board[column][y] = 'blue'
+            if (y != PLAYER1 and y != PLAYER2):
+                draw_piece(column, 5-y, PLAYER2)
+                board[column][y] = PLAYER2
                 if (check_for_win(column, y)):
                     print ('player 2 won')
                 cur_player = 1
                 break
-
-def check_for_win1(x, y):
-    global board
-    color = board [x][y]
-    for i in range(0,6,2):
-        if (win(x, y, color,directions[i]) == 4):
-            return True
-        else:
-            count = win(x, y, color,directions[i]) + win(x, y, color,directions[i]) - 1 
-            if(int(count) == 4):
-                return True
-    if (win(x, y, color,directions[6]) == 4):
-            return True
-    return False
-
-
-def win1(column, row, color, direction):
-    count = 1
-    for i in range(3):
-        if(column>=0 and column<=len(board) and row>=0 and row<=len(board[0])):
-            print(column + direction[0]*(i+1), row + direction[1]*(i+1))
-            if(board[column + direction[0]*(i+1)][row + direction[1]*(i+1)] != color):
-                return int(count)
-        count += 1
-    return 0
 
 def check_for_win(column, row):
     global board
@@ -142,11 +135,9 @@ def check_for_win(column, row):
         return True
     elif (check_sub_diagonal(column, row, color)):
         return True
-    
+
+#checking for wins in each direction
 def check_down(column, row, color):
-    print (board)
-    print ("down")
-    print (row , ' ' , color)
     count = 1
     for i in range(1,4):
         if (row - i >= 0):       
@@ -155,7 +146,6 @@ def check_down(column, row, color):
             else:
                 count = 0
     if(count == 4):
-        print ("Ture Down")
         return True
     return False
 
@@ -167,46 +157,46 @@ def check_row(column, row, color):
         elif (board[i][row] == color):
             count += 1
             if(count == 4):
-                print ("Ture Row")
                 return True
     return False
-#/
+
 def check_main_diagonal(column, row, color):
     count = 1
     for i in range(1,4):
         if (column - i >= 0 and column - i < BOARD_WIDTH and row - i >= 0 and row - i < BOARD_HIEGHT):
             if(board[column - i][row - i] != color):
-                count = 0
+                break
             elif(board[column - i][row - i] == color):
-                   count += 1
+                count += 1
     for i in range(1,4):
         if (column + i >= 0 and column + i < BOARD_WIDTH and row + i >= 0 and row + i < BOARD_HIEGHT):
             if(board[column + i][row + i] != color):
-                count = 0
+                break
             elif(board[column + i][row + i] == color):
                count += 1
     if(count == 4):
         return True
     return False
-#\
+
 def check_sub_diagonal(column, row, color):
     count = 1
     for i in range(1,4):
         if (column - i >= 0 and column - i < BOARD_WIDTH and row + i >= 0 and row + i < BOARD_HIEGHT):
             if(board[column - i][row + i] != color):
-                count = 0
+                break
             elif(board[column - i][row + i] == color):
                 count += 1  
     for i in range(1,4):
         if (column + i >= 0 and column + i < BOARD_WIDTH and row - i >= 0 and row - i < BOARD_HIEGHT):
             if(board[column + i][row - i] != color):
-                count = 0
+                break
             elif(board[column + i][row - i] == color):
                 count += 1
     if(count == 4):
         return True
     return False
-  
+
+#functions for the key listeners 
 def place0():
     global cur_player
     if (cur_player == 1):
