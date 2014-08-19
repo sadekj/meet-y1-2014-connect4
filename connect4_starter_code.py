@@ -90,7 +90,8 @@ def check_sub_diagonal():
 def check_for_win():
     pass
 
-# DO NOT CHANGE
+# DO NOT CHANGE BETWEEN THE LINES
+# --------------------------------------------------------------------------
 # the player 1 game move
 def play1(column):
     global board, cur_player
@@ -194,6 +195,7 @@ turtle.onkey(place3, '4')
 turtle.onkey(place4, '5')
 turtle.onkey(place5, '6')
 turtle.onkey(place6, '7')
+# ---------------------------------------------------------------------------
 
         
 # INSERT A LINE HERE TO ACTUALLY DRAW THE BOARD        
